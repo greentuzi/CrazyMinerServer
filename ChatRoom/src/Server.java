@@ -203,8 +203,8 @@ public class Server extends PublicUI{
 			String desPoint = String.valueOf(x)+"\n"+String.valueOf(y); //终点坐标
 			String reachTime = "3";  //到达时间
 			String returnTime = "5"; //返回时间
-			String msg = "242##launchInfo##" + playerName + "\n" + desPoint + "\n" + reachTime + "\n" + returnTime + "##"; 	
-			sendmsg(msg);
+			String msg = "242##launchInfo##" + playerName + "\n" + desPoint + "\n" + reachTime + "\n" + returnTime + "\n##"; 	
+			sendmsg(msg+"\0");
 		}
 
 		public void msgParse(String msg) {			//处理消息
