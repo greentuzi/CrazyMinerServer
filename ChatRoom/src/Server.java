@@ -193,11 +193,31 @@ public class Server extends PublicUI{
 
 //			errorBox(String.valueOf(clients.size()));
 			clients.get(id).output.print(msg+"\0");
-			clients.get(id).output.flush();
-			
+			clients.get(id).output.flush();			
 		}
+
+		void LaunchInfo242(double angle){
+			String playerName = user.getID(); //角色名
+			double x = Math.sin(angle)*500;
+			double y = Math.cos(angle)*500;
+			String desPoint = String.valueOf(x)+"\n"+String.valueOf(y); //终点坐标
+			String reachTime = "3";  //到达时间
+			String returnTime = "5"; //返回时间
+			String msg = playerName + "\n" + desPoint + "\n" + reachTime + "\n" + returnTime + "##"; 	
+			sendmsg(msg);
+		}
+
 		public void msgParse(String msg) {			//处理消息
-			
+			StringTokenizer tk=new StringTokenizer(msg,"##");
+			String code=tk.nextToken().trim(); //flag号
+			String flagName=tk.nextToken().trim(); //flag名
+			switch(Integer.parseInt(code))
+			{
+			case 241:
+				String angleStr = tk.nextToken().trim();
+				double angle = Double.valueOf(angleStr).doubleValue();
+				LaunchInfo242(angle);
+			}	
 //			errorBox(msg);
 //			errorBox(msg);
 //			while(i++<3)
