@@ -11,12 +11,12 @@ import java.util.*;
 
 public class Server extends PublicUI{
 
-	private ServerSocket server;
-	private boolean isStart=false;
+	private ServerSocket server;					//服务器
+	private boolean isStart=false;					//启动flag
 	private JButton btn_Startup;
 	private JButton btn_Stop;
-	private Service_Thread server_thread;
-	private ArrayList<Client_Thread> clients;
+	private Service_Thread server_thread;			//服务器线程
+	private ArrayList<Client_Thread> clients;		//客户端们
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -75,12 +75,12 @@ public class Server extends PublicUI{
 		});
 	
 	
-		frame.addWindowListener(new WindowAdapter() {
+		frame.addWindowListener(new WindowAdapter() {			//在关闭服务器窗口时的回调函数
 			public void windowClosing(WindowEvent e) {
 				if (isStart) {
-					closeServer();// 关闭服务器
+					closeServer();			// 关闭服务器					
 				}
-				System.exit(0);// 退出程序
+				System.exit(0);				// 退出程序
 			}
 		});
 
@@ -91,7 +91,7 @@ public class Server extends PublicUI{
 	private void closeServer()
 	{
 		server_thread.stop();
-		for (int i=clients.size()-1;i>=0;--i)
+/*		for (int i=clients.size()-1;i>=0;--i)
 		{
 			clients.get(i).getOutput().print(new Message("server_close","").toString());
 			clients.get(i).getOutput().flush();
@@ -108,10 +108,10 @@ public class Server extends PublicUI{
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-	}
+*/	}
 	
 	class Service_Thread extends Thread{
-		ServerSocket server;
+		ServerSocket server;				//服务器socket
 		int c = 0;
 		public Service_Thread(ServerSocket server)
 		{
@@ -123,10 +123,10 @@ public class Server extends PublicUI{
 			while (true){
 				Socket socket;
 				try {
-					socket = server.accept();
+					socket = server.accept();			//一旦有人接入，则socket成为通信用的ClientSocket
 					System.out.println(socket.getPort());
-					Client_Thread client_thread=new Client_Thread(socket,c++);
-					client_thread.start();
+					Client_Thread client_thread=new Client_Thread(socket,c++);		//客户线程，传入socket和ID（ID只作临时调试用）
+					client_thread.start();			//线程开始，run()
 					clients.add(client_thread);
 					} catch (IOException e) {
 					e.printStackTrace();
@@ -159,27 +159,27 @@ public class Server extends PublicUI{
 //			output.print(String.valueOf(id+1));
 			try{
 				char[] ch=new char[2000];
-				input.read(ch);
+				input.read(ch);					//不断从输入流中获取消息
 				String msg=String.valueOf(ch).trim();
 				while (msg!=null && !msg.equals("")){
 					
-					msgParse(msg);
+					msgParse(msg);				//处理消息
 					Arrays.fill(ch, '\0');
 					input.read(ch);
 					msg=String.valueOf(ch).trim();
 				}
-				for (int i=0;i<clients.size();i++) {
+/*				for (int i=0;i<clients.size();i++) {
 					if (clients.get(i).getId() == this.getId()) {
 						clients.remove(i);
 						return;
 					}
 				}
-			
+*/			
 			}catch(Exception e) {
 				e.printStackTrace();
 			}
 		}
-		void sendlist(){
+/*		void sendlist(){
 			String online="";
 			for (int i=0;i<listModel.size();i++){
 				if (listModel.get(i).equals(user.getID()))
@@ -189,21 +189,21 @@ public class Server extends PublicUI{
 			output.print(new Message("user_list",online).toString());
 			output.flush();
 		}
-		void sendmsg(String msg){
+*/		void sendmsg(String msg){			//调试用，发现消息
 
 //			errorBox(String.valueOf(clients.size()));
 			clients.get(id).output.print(msg+"\0");
 			clients.get(id).output.flush();
 			
 		}
-		public void msgParse(String msg) {
+		public void msgParse(String msg) {			//处理消息
 			
 //			errorBox(msg);
 //			errorBox(msg);
 //			while(i++<3)
 //			{
-				clients.get(1-id).output.print(msg+"\0");
-				clients.get(1-id).output.flush();
+//				clients.get(1-id).output.print(msg+"\0");			
+//				clients.get(1-id).output.flush();
 /*				try {
 					clients.get(id).oStream.write(msg+"\0");
 					clients.get(id).oStream.flush();
@@ -268,7 +268,7 @@ public class Server extends PublicUI{
 		
 		
 		//to be done   判断服务器中是否已存在重名用户，重名返回true，无重名返回false
-		boolean db_exist(String name)
+/*		boolean db_exist(String name)
 		{
 			return true;
 		}
@@ -277,9 +277,9 @@ public class Server extends PublicUI{
 		
 		
 		
+	*/	
 		
-		
-		
+		/*
 		
 		private void sendUser(String id) {
 			for (int i=0;i<clients.size();++i)
@@ -296,7 +296,9 @@ public class Server extends PublicUI{
 					break;
 				}
 			}
-		}
+		}*/
+		
+		/*
 		@SuppressWarnings("deprecation")
 		public void disconnect()
 		{
@@ -320,7 +322,7 @@ public class Server extends PublicUI{
 		public User getUser()
 		{
 			return user;
-		}
+		}*/
 	}	
 	
 	private void setLayout()
