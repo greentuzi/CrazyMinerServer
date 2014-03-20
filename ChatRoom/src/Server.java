@@ -8,7 +8,8 @@ import java.awt.event.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
-
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 public class Server extends PublicUI{
 
 	private ServerSocket server;					//服务器
@@ -196,16 +197,72 @@ public class Server extends PublicUI{
 			clients.get(id).output.flush();			
 		}
 
-		void LaunchInfo242(double angle){
-			String playerName = user.getID(); //角色名
-			double x = Math.sin(angle)*500;
-			double y = Math.cos(angle)*500;
-			String desPoint = String.valueOf(x)+"\n"+String.valueOf(y); //终点坐标
-			String reachTime = "3";  //到达时间
-			String returnTime = "5"; //返回时间
-			String msg = "242##launchInfo##" + playerName + "\n" + desPoint + "\n" + reachTime + "\n" + returnTime + "\n##"; 	
-			sendmsg(msg+"\0");
+void LaunchInfo242(double angle){
+	String playerName = String.valueOf(clients.get(id).id % 2); //角色名
+	double originX,originY;
+
+	
+	if(clients.get(id).id % 2 == 1)
+		originX = 314.5;
+	else originX = 1024.5;
+	originY = 144.0;
+	
+	double x = Math.cos(angle)*300+originX;
+	double y = Math.sin(angle)*300+originY;
+	
+	//System.out.println(angle);
+	
+	String desPoint = String.valueOf(x)+"\n"+String.valueOf(y); //终点坐标
+	String reachTime = "3";  //到达时间
+	String returnTime = "5"; //返回时间
+	String msg = "242##launchInfo##" + playerName + "\n" + desPoint + "\n" + reachTime + "\n" + returnTime + "##";
+	
+	JSONObject jobj = new JSONObject();
+	jobj.put("flagID", "242");
+	jobj.put("flagName", "launchInfo");
+	jobj.put("playId", playerName);
+	jobj.put("destX", String.valueOf(x));
+	jobj.put("destY", String.valueOf(y));
+	jobj.put("oreID", String.valueOf(x));
+	jobj.put("reachTime", reachTime);
+	jobj.put("returnTime", returnTime);
+	String jStr = jobj.toString();
+	
+	sendmsg(msg+"\0");
+}
+
+void sentMapInfo201(){
+	JSONObject jobj = new JSONObject();
+	jobj.put("flagID", "201");
+	jobj.put("flagName", "sendMapInfo");
+	jobj.put("oreNum", "5");
+	JSONArray jarr = new JSONArray();
+	JSONObject ore;
+	int rec [] = new int [140];
+	int remain = 140;
+	int gridNum = 240;
+	for (int i=0;i<140;++i)
+	{
+		double rand = Math.random();
+		int chk = (int)(rand*(gridNum-i));
+		System.out.println(chk);
+		if (chk < remain)
+		{
+			
+			ore = new JSONObject();
+			ore.put("orePos", i+1);
+			ore.put("oreType", 1);
+			jarr.add(ore);
+			remain--;
 		}
+	}
+	jobj.put("ores", jarr);
+	errorBox(jobj.toString());
+	int blockSize = 240;
+	for(int i = 0; i < 5;i++){
+		
+	}
+}	
 
 		public void msgParse(String msg) {			//处理消息
 			StringTokenizer tk=new StringTokenizer(msg,"##");

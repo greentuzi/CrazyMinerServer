@@ -2,5 +2,11 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
+	<classpathentry kind="lib" path="D:/program/大三下/ChatRoom/JSONJAR/commons-beanutils-1.7.0.jar"/>
+	<classpathentry kind="lib" path="D:/program/大三下/ChatRoom/JSONJAR/commons-collections-3.2.jar"/>
+	<classpathentry kind="lib" path="D:/program/大三下/ChatRoom/JSONJAR/commons-lang-2.4.jar"/>
+	<classpathentry kind="lib" path="D:/program/大三下/ChatRoom/JSONJAR/commons-logging-1.1.jar"/>
+	<classpathentry kind="lib" path="D:/program/大三下/ChatRoom/JSONJAR/ezmorph-1.0.4.jar"/>
+	<classpathentry kind="lib" path="D:/program/大三下/ChatRoom/JSONJAR/json-lib-2.2.2-jdk15.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
