@@ -193,28 +193,32 @@ public class Server extends PublicUI{
 */		void sendmsg(String msg){			//调试用，发现消息
 
 //			errorBox(String.valueOf(clients.size()));
-			clients.get(id).output.print(msg+"\0");
-			clients.get(id).output.flush();			
+			//clients.get(id).output.print(msg+"\0");
+			//clients.get(id).output.flush();		
+	
+			for(int i=0;i<clients.size();i++){
+				clients.get(i).output.print(msg+"\0");
+				clients.get(i).output.flush();
+				}
 		}
 
 void LaunchInfo242(double angle){
 	String playerName = String.valueOf(clients.get(id).id % 2); //角色名
 	double originX,originY;
-
 	
-	if(clients.get(id).id % 2 == 1)
-		originX = 314.5;
+	if(clients.get(id).id % 2 == 0)
+		originX = 341.5;
 	else originX = 1024.5;
 	originY = 144.0;
 	
 	double x = Math.cos(angle)*300+originX;
 	double y = Math.sin(angle)*300+originY;
 	
-	//System.out.println(angle);
+	System.out.println(clients.get(id).id);
 	
 	String desPoint = String.valueOf(x)+"\n"+String.valueOf(y); //终点坐标
-	String reachTime = "3";  //到达时间
-	String returnTime = "5"; //返回时间
+	String reachTime = "1";  //到达时间
+	String returnTime = "1"; //返回时间
 	String msg = "242##launchInfo##" + playerName + "\n" + desPoint + "\n" + reachTime + "\n" + returnTime + "##";
 	
 	JSONObject jobj = new JSONObject();
@@ -245,7 +249,7 @@ void sentMapInfo201(){
 	{
 		double rand = Math.random();
 		int chk = (int)(rand*(gridNum-i));
-		System.out.println(chk);
+		//System.out.println(chk);
 		if (chk < remain)
 		{
 			
