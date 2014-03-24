@@ -71,7 +71,6 @@ public class Server extends PublicUI{
 		
 		btn_Stop.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				closeServer();
 			}
 		});
 	
@@ -91,25 +90,8 @@ public class Server extends PublicUI{
 
 	private void closeServer()
 	{
-		server_thread.stop();
-/*		for (int i=clients.size()-1;i>=0;--i)
-		{
-			clients.get(i).getOutput().print(new Message("server_close","").toString());
-			clients.get(i).getOutput().flush();
-			clients.get(i).disconnect();
-			listModel.removeAllElements();
-		}
-		isStart=false;
-		try {
-			server.close();
-			txt_Msg.setText(txt_Msg.getText()+"服务器已关闭\n");
-			btn_Startup.setEnabled(true);
-			btn_Stop.setEnabled(false);
-			btn_Send.setEnabled(false);
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
-*/	}
+//		server_thread.stop();
+	}
 	
 	class Service_Thread extends Thread{
 		ServerSocket server;				//服务器socket
@@ -125,6 +107,7 @@ public class Server extends PublicUI{
 				Socket socket;
 				try {
 					socket = server.accept();			//一旦有人接入，则socket成为通信用的ClientSocket
+				
 					System.out.println(socket.getPort());
 					Client_Thread client_thread=new Client_Thread(socket,c++);		//客户线程，传入socket和ID（ID只作临时调试用）
 					client_thread.start();			//线程开始，run()
@@ -139,14 +122,12 @@ public class Server extends PublicUI{
 	class Client_Thread extends Thread{
 		int id;
 		Socket socket;
-		User user;
 		BufferedReader input;
 		PrintWriter output;
 		public Client_Thread(Socket s,int _id)
 		{
 			id = _id;
 			socket=s;
-			user=new User();
 			try {
 				input=new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				output=new PrintWriter(socket.getOutputStream());
@@ -155,10 +136,10 @@ public class Server extends PublicUI{
 				}
 			}
 
-		public void run()
-		{
-//			output.print(String.valueOf(id+1));
+		public void run() {
 			try{
+				output.print(Util.getInstance().mapInfo201()+"\0");
+				output.flush();
 				char[] ch=new char[2000];
 				input.read(ch);					//不断从输入流中获取消息
 				String msg=String.valueOf(ch).trim();
@@ -169,242 +150,25 @@ public class Server extends PublicUI{
 					input.read(ch);
 					msg=String.valueOf(ch).trim();
 				}
-/*				for (int i=0;i<clients.size();i++) {
-					if (clients.get(i).getId() == this.getId()) {
-						clients.remove(i);
-						return;
-					}
-				}
-*/			
+
 			}catch(Exception e) {
 				e.printStackTrace();
 			}
 		}
-/*		void sendlist(){
-			String online="";
-			for (int i=0;i<listModel.size();i++){
-				if (listModel.get(i).equals(user.getID()))
-					continue;
-				online+=(listModel.get(i)+"\n");
-			}
-			output.print(new Message("user_list",online).toString());
-			output.flush();
-		}
-*/		void sendmsg(String msg){			//调试用，发现消息
 
-//			errorBox(String.valueOf(clients.size()));
-			//clients.get(id).output.print(msg+"\0");
-			//clients.get(id).output.flush();		
-	
-			for(int i=0;i<clients.size();i++){
+		void sendmsg(String msg){			//调试用，发送消息
+
+			for(int i=0;i<clients.size();i++)	{
 				clients.get(i).output.print(msg+"\0");
 				clients.get(i).output.flush();
-				}
+			}
 		}
 
-void LaunchInfo242(double angle){
-	String playerName = String.valueOf(clients.get(id).id % 2); //角色名
-	double originX,originY;
-	
-	if(clients.get(id).id % 2 == 0)
-		originX = 341.5;
-	else originX = 1024.5;
-	originY = 144.0;
-	
-	double x = Math.cos(angle)*300+originX;
-	double y = Math.sin(angle)*300+originY;
-	
-	System.out.println(clients.get(id).id);
-	
-	String desPoint = String.valueOf(x)+"\n"+String.valueOf(y); //终点坐标
-	String reachTime = "1";  //到达时间
-	String returnTime = "1"; //返回时间
-	String msg = "242##launchInfo##" + playerName + "\n" + desPoint + "\n" + reachTime + "\n" + returnTime + "##";
-	
-	JSONObject jobj = new JSONObject();
-	jobj.put("flagID", "242");
-	jobj.put("flagName", "launchInfo");
-	jobj.put("playId", playerName);
-	jobj.put("destX", String.valueOf(x));
-	jobj.put("destY", String.valueOf(y));
-	jobj.put("oreID", String.valueOf(x));
-	jobj.put("reachTime", reachTime);
-	jobj.put("returnTime", returnTime);
-	String jStr = jobj.toString();
-	
-	sendmsg(msg+"\0");
-}
 
-void sentMapInfo201(){
-	JSONObject jobj = new JSONObject();
-	jobj.put("flagID", "201");
-	jobj.put("flagName", "sendMapInfo");
-	jobj.put("oreNum", "5");
-	JSONArray jarr = new JSONArray();
-	JSONObject ore;
-	int rec [] = new int [140];
-	int remain = 140;
-	int gridNum = 240;
-	for (int i=0;i<140;++i)
-	{
-		double rand = Math.random();
-		int chk = (int)(rand*(gridNum-i));
-		//System.out.println(chk);
-		if (chk < remain)
-		{
+		public void msgParse(String msg) {
 			
-			ore = new JSONObject();
-			ore.put("orePos", i+1);
-			ore.put("oreType", 1);
-			jarr.add(ore);
-			remain--;
 		}
 	}
-	jobj.put("ores", jarr);
-	errorBox(jobj.toString());
-	int blockSize = 240;
-	for(int i = 0; i < 5;i++){
-		
-	}
-}	
-
-		public void msgParse(String msg) {			//处理消息
-			StringTokenizer tk=new StringTokenizer(msg,"##");
-			String code=tk.nextToken().trim(); //flag号
-			String flagName=tk.nextToken().trim(); //flag名
-			switch(Integer.parseInt(code))
-			{
-			case 241:
-				String angleStr = tk.nextToken().trim();
-				double angle = Double.valueOf(angleStr).doubleValue();
-				LaunchInfo242(angle);
-			}	
-//			errorBox(msg);
-//			errorBox(msg);
-//			while(i++<3)
-//			{
-//				clients.get(1-id).output.print(msg+"\0");			
-//				clients.get(1-id).output.flush();
-/*				try {
-					clients.get(id).oStream.write(msg+"\0");
-					clients.get(id).oStream.flush();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-	*/			
-//			}
-//			sendmsg("msg");
-			/*
-			StringTokenizer tk=new StringTokenizer(msg,"\n");
-			String code=tk.nextToken().trim();
-			switch(Integer.parseInt(code))
-			{
-			case 11:
-				String userName = tk.nextToken();
-				String password = tk.nextToken();
-				
-				boolean check = db_exist(userName);
-				if (check)
-				{
-					output.print("重名");
-				}
-			}
-/*			 StringTokenizer tk=new StringTokenizer(msg,"\n");
-			 String code=tk.nextToken().trim();
-			 String extra=tk.nextToken().substring(1).trim();
-			 String body=tk.nextToken("##").substring(1).trim();
-			 switch(Integer.parseInt(code))
-			 {
-			 case 0x01:
-				 String[] spt=body.split("\n");
-				 user.setID(spt[0]);
-				 user.setIP(socket.getInetAddress().getHostAddress());
-				 user.setPort(socket.getPort());
-				 user.setServerPort(Integer.parseInt(spt[1]));
-				 System.out.println(spt[1]);
-				 txt_Msg.setText(txt_Msg.getText()+user.getID()+"上线了\n");
-				 listModel.addElement(user.getID());
-				 sendmsg("user_login",spt[0],false);
-				 break;
-			 case 0x02:
-				 txt_Msg.setText(txt_Msg.getText()+user.getID()+"下线了\n");				 
-				 sendmsg("user_logout",user.getID(),false);
-				 disconnect();
-				 break;
-			 case 0x03:
-				 sendlist();
-				 break;
-			 case 0x05:
-				 body=user.getID()+"说: "+body;
-				 txt_Msg.setText(txt_Msg.getText()+body+"\n");
-				 sendmsg("room_text_transpond",body,true);
-				 break;
-			 case 0x07:
-				 sendUser(body);
-			 }*/
-		 }
-		
-		
-		
-		
-		//to be done   判断服务器中是否已存在重名用户，重名返回true，无重名返回false
-/*		boolean db_exist(String name)
-		{
-			return true;
-		}
-		
-		
-		
-		
-		
-	*/	
-		
-		/*
-		
-		private void sendUser(String id) {
-			for (int i=0;i<clients.size();++i)
-			{
-				User tmpUsr=clients.get(i).getUser();
-				if (tmpUsr.getID().equals(id))
-				{
-					output.print(new Message(
-							"user_info",
-							tmpUsr.getID()+"\n"+
-							tmpUsr.getIP()+"\n"+
-							tmpUsr.getServerPort()).toString());
-					output.flush();
-					break;
-				}
-			}
-		}*/
-		
-		/*
-		@SuppressWarnings("deprecation")
-		public void disconnect()
-		{
-			 try {
-				 input.close();
-				 output.close();
-				 socket.close();
-				 listModel.removeElement(user.getID());
-				 clients.remove(this);
-				 stop();
-			 	}
-			 catch (IOException e) { 
-				 e.printStackTrace();
-			 }
-		}
-		
-		public PrintWriter getOutput()
-		{
-			return output;
-		}
-		public User getUser()
-		{
-			return user;
-		}*/
-	}	
 	
 	private void setLayout()
 	{
@@ -457,6 +221,4 @@ void sentMapInfo201(){
 						.addGap(45))
 			);
 	}
-
-
 }
