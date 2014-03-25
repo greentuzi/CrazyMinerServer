@@ -8,6 +8,7 @@ import java.awt.event.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 public class Server extends PublicUI{
@@ -144,8 +145,14 @@ public class Server extends PublicUI{
 				input.read(ch);					//不断从输入流中获取消息
 				String msg=String.valueOf(ch).trim();
 				while (msg!=null && !msg.equals("")){
-					
-					msgParse(msg);				//处理消息
+					JSONObject jobj = new JSONObject();					
+					//msgParse(msg);				//处理消息
+					System.out.println(msg);
+					if(Util.getInstance().msgParse(msg,jobj,this)){
+						String sentMsg = jobj + "\0";
+						output.print(sentMsg);
+						output.flush();						
+					}
 					Arrays.fill(ch, '\0');
 					input.read(ch);
 					msg=String.valueOf(ch).trim();
