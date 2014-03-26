@@ -68,7 +68,7 @@ public class Server extends PublicUI{
 					e1.printStackTrace();
 				}
 			}
-		});
+		});     
 		
 		btn_Stop.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -125,6 +125,7 @@ public class Server extends PublicUI{
 		Socket socket;
 		BufferedReader input;
 		PrintWriter output;
+		User user;
 		public Client_Thread(Socket s,int _id)
 		{
 			id = _id;
@@ -139,8 +140,23 @@ public class Server extends PublicUI{
 
 		public void run() {
 			try{
-				output.print(Util.getInstance().mapInfo201()+"\0");
-				output.flush();
+				
+				
+				ArrayList<_1v1_Room> rooms = RoomManager.getRooms();
+				if (rooms.size() == 0)
+				{
+					RoomManager.create(this.user);
+				}
+				else
+				{
+					rooms.get(0).enter(this.user);
+				}
+				
+				
+				
+				
+//				output.print(Util.getInstance().mapInfo201()+"\0");
+//				output.flush();
 				char[] ch=new char[2000];
 				input.read(ch);					//不断从输入流中获取消息
 				String msg=String.valueOf(ch).trim();
@@ -171,10 +187,6 @@ public class Server extends PublicUI{
 			}
 		}
 
-
-		public void msgParse(String msg) {
-			
-		}
 	}
 	
 	private void setLayout()

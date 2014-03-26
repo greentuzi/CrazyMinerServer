@@ -3,7 +3,6 @@ import java.util.ArrayList;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-
 public class Util {
 	
 	static Util instance;
@@ -105,4 +104,5 @@ public class Util {
 		System.out.println(jobj.toString());
 		return jobj;
 	}
+
 }
