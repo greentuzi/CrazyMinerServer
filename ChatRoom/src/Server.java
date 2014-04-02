@@ -68,7 +68,7 @@ public class Server extends PublicUI{
 					e1.printStackTrace();
 				}
 			}
-		});     
+		});
 		
 		btn_Stop.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -125,7 +125,6 @@ public class Server extends PublicUI{
 		Socket socket;
 		BufferedReader input;
 		PrintWriter output;
-		User user;
 		public Client_Thread(Socket s,int _id)
 		{
 			id = _id;
@@ -140,23 +139,11 @@ public class Server extends PublicUI{
 
 		public void run() {
 			try{
-				
-				
-				ArrayList<_1v1_Room> rooms = RoomManager.getRooms();
-				if (rooms.size() == 0)
-				{
-					RoomManager.create(this.user);
-				}
-				else
-				{
-					rooms.get(0).enter(this.user);
-				}
-				
-				
-				
-				
-//				output.print(Util.getInstance().mapInfo201()+"\0");
-//				output.flush();
+				output.print(Util.getInstance().posInfo208(this)+"\0");
+				output.flush();					
+				output.print(Util.getInstance().mapInfo201()+"\0");
+				output.flush();
+			
 				char[] ch=new char[2000];
 				input.read(ch);					//不断从输入流中获取消息
 				String msg=String.valueOf(ch).trim();
@@ -164,10 +151,13 @@ public class Server extends PublicUI{
 					JSONObject jobj = new JSONObject();					
 					//msgParse(msg);				//处理消息
 					System.out.println(msg);
-					if(Util.getInstance().msgParse(msg,jobj,this)){
+					jobj = Util.getInstance().msgParse(msg,this);
+					if(jobj != null){
 						String sentMsg = jobj + "\0";
-						output.print(sentMsg);
-						output.flush();						
+						System.out.println(sentMsg);
+						sendmsg(sentMsg);
+						//output.print(sentMsg);
+						//output.flush();						
 					}
 					Arrays.fill(ch, '\0');
 					input.read(ch);
@@ -182,11 +172,15 @@ public class Server extends PublicUI{
 		void sendmsg(String msg){			//调试用，发送消息
 
 			for(int i=0;i<clients.size();i++)	{
-				clients.get(i).output.print(msg+"\0");
+				clients.get(i).output.print(msg);
 				clients.get(i).output.flush();
 			}
 		}
 
+
+		public void msgParse(String msg) {
+			
+		}
 	}
 	
 	private void setLayout()
